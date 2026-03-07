@@ -91,20 +91,24 @@ function runCalculation(brs1, bxs1, brs0, bxs0, lineRows) {
 
 /**
  * 변압기 고장전류 계산
- * @param {number} srcZ1R  - 전원측 정상 R 합계 (p.u.)
- * @param {number} srcZ1X  - 전원측 정상 X 합계 (p.u.)
+ * @param {number} srcZ1R  - 전원측 정상 R 합계 (p.u., 시스템기준)
+ * @param {number} srcZ1X  - 전원측 정상 X 합계 (p.u., 시스템기준)
  * @param {string} trType  - 'dy-solid' | 'dd' | 'dy-eff'
- * @param {number} ztMag   - |ZT| (p.u., 시스템 기준)
+ * @param {number} ztMag   - |ZT| (p.u., 변압기 자기용량기준)
  * @param {number} xr      - X/R 비율
+ * @param {number} trMVA   - 변압기 용량 (MVA)
  * @param {number} v2kV    - 2차 전압 (kV)
+ * @param {number} znR     - 중성점 접지 R (p.u., 시스템기준, 유효접지 전용)
+ * @param {number} znX     - 중성점 접지 X (p.u., 시스템기준, 유효접지 전용)
  */
-function runTransformerCalc(srcZ1R, srcZ1X, trType, ztMag, xr, v2kV) {
+function runTransformerCalc(srcZ1R, srcZ1X, trType, ztMag, xr, trMVA, v2kV, znR, znX) {
   const ibase1 = baseCurrentA;
   const ibase2 = baseMVA * 1e6 / (Math.sqrt(3) * v2kV * 1e3);
 
-  // ZT 분해 (X/R → R, X)
-  const ztR = ztMag / Math.sqrt(1 + xr * xr);
-  const ztX = ztMag * xr / Math.sqrt(1 + xr * xr);
+  // 자기용량기준 → 시스템기준 환산: ZT_sys = ZT_tr × (baseMVA / trMVA)
+  const ztMagSys = ztMag * (baseMVA / trMVA);
+  const ztR = ztMagSys / Math.sqrt(1 + xr * xr);
+  const ztX = ztMagSys * xr / Math.sqrt(1 + xr * xr);
 
   // 총 정상 임피던스 (전원 + 변압기)
   const z1R = srcZ1R + ztR;
@@ -112,11 +116,12 @@ function runTransformerCalc(srcZ1R, srcZ1X, trType, ztMag, xr, v2kV) {
   const z1  = Math.sqrt(z1R * z1R + z1X * z1X);
 
   // 영상 임피던스 (2차 측)
-  // Δ 1차: 영상전류 차단 → Z0_2차 = ZT만
   // Δ-Δ: 영상 경로 없음
+  // Δ-Yg(직접접지): Z0 = ZT  (Δ1차가 전원 영상 차단, Zn=0)
+  // Δ-Yg(유효접지): Z0 = ZT + 3Zn
   const hasSLG = trType !== 'dd';
-  const z0R = hasSLG ? ztR : 0;
-  const z0X = hasSLG ? ztX : 0;
+  const z0R = hasSLG ? ztR + 3 * znR : 0;
+  const z0X = hasSLG ? ztX + 3 * znX : 0;
 
   // 합성 임피던스 |2Z1 + Z0|
   const zCombR = 2 * z1R + z0R;
@@ -124,55 +129,59 @@ function runTransformerCalc(srcZ1R, srcZ1X, trType, ztMag, xr, v2kV) {
   const zComb  = Math.sqrt(zCombR * zCombR + zCombX * zCombX);
 
   // p.u. 전류
-  const i3p_pu  = z1 > 0 ? 1 / z1 : 0;
-  const ill_pu  = z1 > 0 ? Math.sqrt(3) / (2 * z1) : 0;
-  // SLG 2차: 3·I0, SLG 1차(Δ 권선): 2·I0 (영상분 내부 순환)
+  const i3p_pu   = z1 > 0 ? 1 / z1 : 0;
+  const ill_pu   = z1 > 0 ? Math.sqrt(3) / (2 * z1) : 0;
   const islg2_pu = (hasSLG && zComb > 0) ? 3 / zComb : 0;
   const islg1_pu = (hasSLG && zComb > 0) ? 2 / zComb : 0;
 
-  // 계산과정 텍스트 생성
+  // 계산과정 텍스트
   const trTypeName = { 'dy-solid': 'Δ-Y (직접접지)', 'dd': 'Δ-Δ', 'dy-eff': 'Δ-Y (유효접지)' }[trType];
+  const znLine = (trType === 'dy-eff')
+    ? '  Zn = ' + znR.toFixed(5) + ' + j' + znX.toFixed(5) + ' (p.u., 시스템기준)\n'
+    : '';
   const hdr =
     '■ 기준값\n' +
     '  기준용량: ' + baseMVA + ' MVA\n' +
     '  1차 기준전압: ' + baseKV.toFixed(1) + ' kV  Ibase1 = ' + ibase1.toFixed(1) + ' A\n' +
     '  2차 기준전압: ' + v2kV + ' kV  Ibase2 = ' + ibase2.toFixed(1) + ' A\n' +
     '  결선: ' + trTypeName + '\n\n' +
-    '■ 변압기 임피던스 (p.u.)\n' +
-    '  |ZT| = ' + ztMag.toFixed(5) + ',  X/R = ' + xr.toFixed(2) + '\n' +
-    '  RT = ' + ztR.toFixed(5) + ',  XT = ' + ztX.toFixed(5) + '\n\n' +
-    '■ 전원측 정상 임피던스 (p.u.)\n' +
+    '■ 변압기 임피던스 환산\n' +
+    '  변압기 용량: ' + trMVA + ' MVA\n' +
+    '  |ZT| = ' + ztMag.toFixed(5) + ' p.u. (자기용량기준)\n' +
+    '  → 시스템기준: ' + ztMag.toFixed(5) + ' × (' + baseMVA + '/' + trMVA + ') = ' + ztMagSys.toFixed(5) + ' p.u.\n' +
+    '  X/R = ' + xr.toFixed(2) + '  →  RT = ' + ztR.toFixed(5) + ',  XT = ' + ztX.toFixed(5) + '\n' +
+    znLine +
+    '\n■ 전원측 정상 임피던스 (p.u., 시스템기준)\n' +
     '  Z1_src = ' + srcZ1R.toFixed(5) + ' + j' + srcZ1X.toFixed(5) + '\n\n' +
-    '■ 총 정상 임피던스 Z1_total (p.u.)\n' +
-    '  = Z1_src + ZT = ' + z1R.toFixed(5) + ' + j' + z1X.toFixed(5) + '\n' +
+    '■ 총 정상 임피던스 Z1_total\n' +
+    '  = Z1_src + ZT_sys = ' + z1R.toFixed(5) + ' + j' + z1X.toFixed(5) + '\n' +
     '  |Z1_total| = ' + z1.toFixed(5) + '\n\n';
 
   const det3p =
     '=== 3상단락전류 계산과정 (변압기) ===\n\n' + hdr +
-    '■ 3상단락\n' +
-    '  I3φ = Ibase / |Z1_total|\n' +
+    '■ 3상단락  I3φ = Ibase / |Z1_total|\n' +
     '  2차: ' + ibase2.toFixed(1) + ' / ' + z1.toFixed(5) + ' = ' + (i3p_pu * ibase2).toFixed(1) + ' A\n' +
     '  1차: ' + ibase1.toFixed(1) + ' / ' + z1.toFixed(5) + ' = ' + (i3p_pu * ibase1).toFixed(1) + ' A\n';
 
   const detLL =
     '=== 선간단락전류 계산과정 (변압기) ===\n\n' + hdr +
-    '■ 선간단락 (LL)\n' +
-    '  I_LL = √3·Ibase / (2·|Z1_total|)\n' +
+    '■ 선간단락  I_LL = √3·Ibase / (2·|Z1_total|)\n' +
     '  2차: √3 × ' + ibase2.toFixed(1) + ' / (2 × ' + z1.toFixed(5) + ') = ' + (ill_pu * ibase2).toFixed(1) + ' A\n' +
     '  1차: √3 × ' + ibase1.toFixed(1) + ' / (2 × ' + z1.toFixed(5) + ') = ' + (ill_pu * ibase1).toFixed(1) + ' A\n';
 
+  const z0Desc = trType === 'dy-eff'
+    ? '  Z0_2차 = ZT + 3Zn\n       = (' + ztR.toFixed(5) + ' + j' + ztX.toFixed(5) + ') + 3×(' + znR.toFixed(5) + ' + j' + znX.toFixed(5) + ')\n       = ' + z0R.toFixed(5) + ' + j' + z0X.toFixed(5) + '\n'
+    : '  Z0_2차 = ZT = ' + z0R.toFixed(5) + ' + j' + z0X.toFixed(5) + ' (Δ1차가 전원 영상 차단, Zn=0)\n';
+
   const detSLG = hasSLG
     ? '=== 1선지락전류 계산과정 (변압기) ===\n\n' + hdr +
-      '■ 영상 임피던스 (2차 측)\n' +
-      '  Z0_2차 = ZT (Δ 1차가 전원 영상분 차단)\n' +
-      '  Z0 = ' + z0R.toFixed(5) + ' + j' + z0X.toFixed(5) + '\n\n' +
+      '■ 영상 임피던스 (2차 측)\n' + z0Desc + '\n' +
       '■ 합성 |2Z1 + Z0|\n' +
-      '  = ' + zCombR.toFixed(5) + ' + j' + zCombX.toFixed(5) + '\n' +
-      '  크기 = ' + zComb.toFixed(5) + '\n\n' +
+      '  = ' + zCombR.toFixed(5) + ' + j' + zCombX.toFixed(5) + '  크기 = ' + zComb.toFixed(5) + '\n\n' +
       '■ 1선지락 (SLG)\n' +
       '  2차: Islg = 3·Ibase2 / |2Z1+Z0|\n' +
       '       = 3 × ' + ibase2.toFixed(1) + ' / ' + zComb.toFixed(5) + ' = ' + (islg2_pu * ibase2).toFixed(1) + ' A\n\n' +
-      '  1차(Δ 권선): 영상분은 내부 순환, 선전류 = 2·I0·Ibase1\n' +
+      '  1차(Δ권선): 영상분 내부 순환, 선전류 = 2·I0·Ibase1\n' +
       '       = 2 × ' + ibase1.toFixed(1) + ' / ' + zComb.toFixed(5) + ' = ' + (islg1_pu * ibase1).toFixed(1) + ' A\n'
     : '=== 1선지락전류 계산과정 (변압기) ===\n\nΔ-Δ 결선: 양측 모두 영상전류 경로 없음 → SLG 전류 불통\n';
 
@@ -183,8 +192,6 @@ function runTransformerCalc(srcZ1R, srcZ1X, trType, ztMag, xr, v2kV) {
     ill_1:  (ill_pu  * ibase1).toFixed(1),
     islg_2: hasSLG ? (islg2_pu * ibase2).toFixed(1) : null,
     islg_1: hasSLG ? (islg1_pu * ibase1).toFixed(1) : null,
-    ibase2: ibase2.toFixed(1),
-    v2kV,
-    det3p, detLL, detSLG
+    v2kV, det3p, detLL, detSLG
   };
 }

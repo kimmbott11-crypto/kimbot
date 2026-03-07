@@ -105,6 +105,16 @@ function updateAddBtn() {
   document.getElementById('btn-add-line').disabled = lineCount >= 10;
 }
 
+// ---------- 변압기 결선 변경 ----------
+function onTrTypeChange() {
+  const isEff = document.getElementById('tr-type').value === 'dy-eff';
+  document.getElementById('tr-zn-row').style.display = isEff ? '' : 'none';
+  if (!isEff) {
+    document.getElementById('tr-zn-r').value = '';
+    document.getElementById('tr-zn-x').value = '';
+  }
+}
+
 // ---------- 고장계산 ----------
 function calculate() {
   const brs1 = parseFloat(document.getElementById('brs1').value);
@@ -147,14 +157,19 @@ function calculate() {
   el3p.textContent  = result.threePh; el3p.style.fontSize = '28px';
 
   // 변압기 계산 (입력값 있을 때만)
-  const trV2  = parseFloat(document.getElementById('tr-v2').value);
-  const trZt  = parseFloat(document.getElementById('tr-zt').value);
-  const trXr  = parseFloat(document.getElementById('tr-xr').value);
+  const trV2   = parseFloat(document.getElementById('tr-v2').value);
+  const trZt   = parseFloat(document.getElementById('tr-zt').value);
+  const trXr   = parseFloat(document.getElementById('tr-xr').value);
+  const trMVA  = parseFloat(document.getElementById('tr-mva').value);
   const trType = document.getElementById('tr-type').value;
   const trResultArea = document.getElementById('tr-result-area');
 
-  if (!isNaN(trV2) && trV2 > 0 && !isNaN(trZt) && trZt > 0 && !isNaN(trXr) && trXr > 0) {
-    const tr = runTransformerCalc(result.tR1, result.tX1, trType, trZt, trXr, trV2);
+  // 유효접지 접지 임피던스 (없으면 0)
+  const znR = parseFloat(document.getElementById('tr-zn-r').value) || 0;
+  const znX = parseFloat(document.getElementById('tr-zn-x').value) || 0;
+
+  if (!isNaN(trV2) && trV2 > 0 && !isNaN(trZt) && trZt > 0 && !isNaN(trXr) && trXr > 0 && !isNaN(trMVA) && trMVA > 0) {
+    const tr = runTransformerCalc(result.tR1, result.tX1, trType, trZt, trXr, trMVA, trV2, znR, znX);
     trDetails = { '3p': tr.det3p, ll: tr.detLL, slg: tr.detSLG };
 
     document.getElementById('tr-v2-label').textContent = trV2;

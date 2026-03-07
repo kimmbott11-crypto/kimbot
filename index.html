@@ -58,22 +58,30 @@
   </div>
   <div class="row">
     <label>결선</label>
-    <select id="tr-type">
+    <select id="tr-type" onchange="onTrTypeChange()">
       <option value="dy-solid">Δ-Y (직접접지)</option>
       <option value="dd">Δ-Δ</option>
       <option value="dy-eff">Δ-Y (유효접지)</option>
     </select>
   </div>
   <div class="row">
-    <label>2차 전압</label>
-    <input type="text" id="tr-v2" placeholder="예: 0.38" inputmode="decimal">
+    <label>용량</label>
+    <input type="text" id="tr-mva" placeholder="MVA" inputmode="decimal">
+    <span class="unit-label">MVA</span>
+    <label style="min-width:28px">2차</label>
+    <input type="text" id="tr-v2" placeholder="kV" inputmode="decimal">
     <span class="unit-label">kV</span>
   </div>
   <div class="row">
     <label>|ZT|</label>
-    <input type="text" id="tr-zt" placeholder="p.u." inputmode="decimal">
+    <input type="text" id="tr-zt" placeholder="p.u. (자기용량기준)" inputmode="decimal">
     <label style="min-width:28px">X/R</label>
     <input type="text" id="tr-xr" placeholder="비율" inputmode="decimal">
+  </div>
+  <div class="row" id="tr-zn-row" style="display:none;">
+    <label>Zn</label>
+    <input type="text" id="tr-zn-r" placeholder="Rn (p.u.)" inputmode="decimal">
+    <input type="text" id="tr-zn-x" placeholder="Xn (p.u.)" inputmode="decimal">
   </div>
 </div>
 
