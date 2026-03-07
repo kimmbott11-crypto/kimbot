@@ -101,7 +101,7 @@ function runCalculation(brs1, bxs1, brs0, bxs0, lineRows) {
  * @param {number} znR     - 중성점 접지 R (p.u., 시스템기준, 유효접지 전용)
  * @param {number} znX     - 중성점 접지 X (p.u., 시스템기준, 유효접지 전용)
  */
-function runTransformerCalc(srcZ1R, srcZ1X, trType, ztMag, xr, trMVA, v2kV, znR, znX) {
+function runTransformerCalc(srcZ1R, srcZ1X, trType, ztMag, xr, trMVA, v2kV, znR_ohm, znX_ohm) {
   const ibase1 = baseCurrentA;
   const ibase2 = baseMVA * 1e6 / (Math.sqrt(3) * v2kV * 1e3);
 
@@ -114,6 +114,11 @@ function runTransformerCalc(srcZ1R, srcZ1X, trType, ztMag, xr, trMVA, v2kV, znR,
   const z1R = srcZ1R + ztR;
   const z1X = srcZ1X + ztX;
   const z1  = Math.sqrt(z1R * z1R + z1X * z1X);
+
+  // Zn [Ω] → p.u. 환산: Zbase2 = V2_kV² / baseMVA [Ω]
+  const zbase2 = (v2kV * v2kV) / baseMVA;
+  const znR = znR_ohm / zbase2;
+  const znX = znX_ohm / zbase2;
 
   // 영상 임피던스 (2차 측)
   // Δ-Δ: 영상 경로 없음
@@ -137,7 +142,9 @@ function runTransformerCalc(srcZ1R, srcZ1X, trType, ztMag, xr, trMVA, v2kV, znR,
   // 계산과정 텍스트
   const trTypeName = { 'dy-solid': 'Δ-Y (직접접지)', 'dd': 'Δ-Δ', 'dy-eff': 'Δ-Y (유효접지)' }[trType];
   const znLine = (trType === 'dy-eff')
-    ? '  Zn = ' + znR.toFixed(5) + ' + j' + znX.toFixed(5) + ' (p.u., 시스템기준)\n'
+    ? '  Zn = ' + znR_ohm.toFixed(4) + ' + j' + znX_ohm.toFixed(4) + ' Ω\n' +
+      '  Zbase2 = ' + v2kV + '² / ' + baseMVA + ' = ' + zbase2.toFixed(4) + ' Ω\n' +
+      '  Zn(p.u.) = Zn / Zbase2 = ' + znR.toFixed(5) + ' + j' + znX.toFixed(5) + '\n'
     : '';
   const hdr =
     '■ 기준값\n' +
@@ -170,7 +177,11 @@ function runTransformerCalc(srcZ1R, srcZ1X, trType, ztMag, xr, trMVA, v2kV, znR,
     '  1차: √3 × ' + ibase1.toFixed(1) + ' / (2 × ' + z1.toFixed(5) + ') = ' + (ill_pu * ibase1).toFixed(1) + ' A\n';
 
   const z0Desc = trType === 'dy-eff'
-    ? '  Z0_2차 = ZT + 3Zn\n       = (' + ztR.toFixed(5) + ' + j' + ztX.toFixed(5) + ') + 3×(' + znR.toFixed(5) + ' + j' + znX.toFixed(5) + ')\n       = ' + z0R.toFixed(5) + ' + j' + z0X.toFixed(5) + '\n'
+    ? '  Z0_2차 = ZT + 3Zn (p.u.)\n' +
+      '       = (' + ztR.toFixed(5) + ' + j' + ztX.toFixed(5) + ')\n' +
+      '       + 3×(' + znR.toFixed(5) + ' + j' + znX.toFixed(5) + ')\n' +
+      '       [Zn입력: ' + znR_ohm.toFixed(4) + '+j' + znX_ohm.toFixed(4) + ' Ω → ÷Zbase2(' + zbase2.toFixed(4) + 'Ω)]\n' +
+      '       = ' + z0R.toFixed(5) + ' + j' + z0X.toFixed(5) + '\n'
     : '  Z0_2차 = ZT = ' + z0R.toFixed(5) + ' + j' + z0X.toFixed(5) + ' (Δ1차가 전원 영상 차단, Zn=0)\n';
 
   const detSLG = hasSLG
