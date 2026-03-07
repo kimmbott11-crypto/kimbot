@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>KimBot - 고장계산기</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- ================================================
+     헤더
+     ================================================ -->
+<div class="section">
+  <h1>KimBot 고장계산기</h1>
+  <div class="subtitle">기준: 100MVA, 22.9kV / Ibase = <span id="ibase"></span> A</div>
+  <div class="note">• 정상임피던스 = 역상임피던스 (Z1 = Z2)</div>
+</div>
+
+<!-- ================================================
+     모선 임피던스 입력
+     ================================================ -->
+<div class="section">
+  <div class="section-header">
+    <h3>모선 임피던스 (p.u.)</h3>
+    <button class="btn btn-small" onclick="applyTypical()">Typical</button>
+  </div>
+  <div class="row">
+    <label>정상</label>
+    <input type="text" id="brs1" placeholder="RS1" inputmode="decimal">
+    <input type="text" id="bxs1" placeholder="XS1" inputmode="decimal">
+  </div>
+  <div class="row">
+    <label>영상</label>
+    <input type="text" id="brs0" placeholder="RS0" inputmode="decimal">
+    <input type="text" id="bxs0" placeholder="XS0" inputmode="decimal">
+  </div>
+</div>
+
+<!-- ================================================
+     선로 정보
+     ================================================ -->
+<div class="section">
+  <div class="section-header">
+    <h3>선로 정보 (최대 10개)</h3>
+    <button class="btn btn-small" onclick="showDB()">DB 보기</button>
+  </div>
+  <div id="lines-container"></div>
+  <button class="btn-add" id="btn-add-line" onclick="addLine()">＋ 선로 추가</button>
+</div>
+
+<!-- ================================================
+     계산 + 결과
+     ================================================ -->
+<div class="section">
+  <button class="btn btn-primary" onclick="calculate()">고장계산</button>
+  <div id="result-area" style="display:none;">
+    <div class="results-grid">
+      <div class="result-box">
+        <div class="result-label">1선지락전류 (SLG)</div>
+        <div class="result-value" id="result-slg"></div>
+        <button class="detail-btn" onclick="showDetail('slg')">계산과정 보기</button>
+      </div>
+      <div class="result-box">
+        <div class="result-label">3상단락전류</div>
+        <div class="result-value green" id="result-3p"></div>
+        <button class="detail-btn" onclick="showDetail('3p')">계산과정 보기</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================
+     모달 - DB 보기
+     ================================================ -->
+<div class="modal-overlay" id="db-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>임피던스 DB (p.u./km)</h3>
+      <button class="modal-close" onclick="closeDB()">닫기</button>
+    </div>
+    <div class="modal-body" id="db-body"></div>
+  </div>
+</div>
+
+<!-- ================================================
+     모달 - 계산과정
+     ================================================ -->
+<div class="modal-overlay" id="detail-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>계산과정</h3>
+      <button class="modal-close" onclick="closeDetail()">닫기</button>
+    </div>
+    <div class="modal-body">
+      <div class="detail-text" id="detail-text"></div>
+    </div>
+  </div>
+</div>
+
+<!-- 로드 순서 중요: db → calc → ui -->
+<script src="js/db.js"></script>
+<script src="js/calc.js"></script>
+<script src="js/ui.js"></script>
+</body>
+</html>

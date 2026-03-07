@@ -1,0 +1,155 @@
+/* ================================================
+   고장계산기 스타일
+   레이아웃/색상 변경 시 이 파일만 수정합니다.
+   ================================================ */
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #f2f2f7;
+  color: #1c1c1e;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 0 0 80px 0;
+  -webkit-text-size-adjust: 100%;
+}
+
+/* ---------- 카드 섹션 ---------- */
+.section {
+  background: #fff;
+  margin: 12px 16px;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.section-header h3 {
+  font-size: 13px;
+  color: #6e6e73;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+/* ---------- 타이포그래피 ---------- */
+h1 { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+.subtitle { font-size: 12px; color: #8e8e93; }
+.note { font-size: 11px; color: #8e8e93; margin-top: 4px; line-height: 1.4; }
+
+/* ---------- 폼 요소 ---------- */
+.row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.row label { font-size: 13px; min-width: 30px; font-weight: 500; }
+
+input[type="text"], input[type="number"] {
+  flex: 1;
+  padding: 8px 10px;
+  border: 1px solid #d1d1d6;
+  border-radius: 8px;
+  font-size: 14px;
+  background: #f9f9fb;
+  outline: none;
+  min-width: 0;
+}
+input:focus { border-color: #007aff; background: #fff; }
+
+select {
+  flex: 1;
+  padding: 8px 6px;
+  border: 1px solid #d1d1d6;
+  border-radius: 8px;
+  font-size: 12px;
+  background: #f9f9fb;
+  outline: none;
+  min-width: 0;
+  -webkit-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M3 4.5L6 7.5L9 4.5' stroke='%238e8e93' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  padding-right: 24px;
+}
+
+/* ---------- 버튼 ---------- */
+.btn { padding: 6px 14px; border: none; border-radius: 8px; font-size: 13px; cursor: pointer; font-weight: 500; }
+.btn-primary { background: #007aff; color: #fff; width: 100%; padding: 12px; font-size: 16px; font-weight: 600; border-radius: 10px; }
+.btn-primary:active { background: #0056cc; }
+.btn-small { background: #e9e9eb; color: #007aff; font-size: 12px; padding: 4px 10px; }
+.btn-small:active { background: #d1d1d6; }
+.btn-danger { background: none; border: none; color: #ff3b30; font-size: 18px; cursor: pointer; padding: 4px 8px; line-height: 1; }
+.btn-add { background: none; border: none; color: #007aff; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 4px; padding: 8px 0; font-weight: 500; }
+.btn-add:disabled { color: #c7c7cc; cursor: default; }
+
+/* ---------- 선로 입력 행 ---------- */
+.line-row { display: flex; align-items: center; gap: 4px; margin-bottom: 8px; flex-wrap: wrap; }
+.line-num { font-size: 12px; color: #8e8e93; min-width: 20px; text-align: right; padding-right: 2px; }
+.line-top { display: flex; align-items: center; gap: 4px; width: 100%; }
+.line-bottom { display: flex; align-items: center; gap: 4px; width: 100%; padding-left: 24px; margin-top: 4px; }
+.line-bottom-label { font-size: 11px; color: #8e8e93; min-width: 42px; }
+.line-bottom select { font-size: 11px; }
+.line-top select.line-name { flex: 2; }
+.line-top select.line-size { width: 68px; flex: 0 0 68px; }
+.line-top input.line-dist { width: 58px; flex: 0 0 58px; font-size: 12px; padding: 8px 6px; }
+.line-divider { border: none; border-top: 1px solid #f2f2f7; margin: 4px 0 8px 0; }
+
+/* ---------- 결과 ---------- */
+.result-box { text-align: center; padding: 12px 0; }
+.result-label { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+.result-value { font-size: 28px; font-weight: 700; color: #007aff; }
+.result-value.green { color: #34c759; }
+.detail-btn { background: none; border: none; color: #007aff; font-size: 13px; cursor: pointer; margin-top: 8px; }
+.results-grid { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+.results-grid .result-box { flex: 1; min-width: 140px; }
+
+/* ---------- 모달 ---------- */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 100;
+  justify-content: center;
+  align-items: flex-end;
+}
+.modal-overlay.active { display: flex; }
+.modal {
+  background: #fff;
+  border-radius: 16px 16px 0 0;
+  width: 100%;
+  max-width: 600px;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+}
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  border-bottom: 1px solid #e5e5ea;
+}
+.modal-header h3 { font-size: 16px; font-weight: 600; }
+.modal-close { background: none; border: none; color: #007aff; font-size: 15px; cursor: pointer; font-weight: 500; }
+.modal-body { overflow-y: auto; padding: 16px; -webkit-overflow-scrolling: touch; }
+
+/* ---------- DB 테이블 ---------- */
+.db-section-title { font-size: 13px; color: #6e6e73; font-weight: 600; margin: 16px 0 8px 0; }
+.db-section-title:first-child { margin-top: 0; }
+.db-table { width: 100%; border-collapse: collapse; font-size: 11px; margin-bottom: 8px; }
+.db-table th { font-weight: 600; text-align: right; padding: 4px 4px; border-bottom: 1px solid #e5e5ea; }
+.db-table th:first-child, .db-table th:nth-child(2) { text-align: left; }
+.db-table td { text-align: right; padding: 4px 4px; border-bottom: 1px solid #f2f2f7; }
+.db-table td:first-child, .db-table td:nth-child(2) { text-align: left; }
+
+/* ---------- 계산과정 텍스트 ---------- */
+.detail-text {
+  font-family: 'SF Mono', 'Menlo', 'Courier New', monospace;
+  font-size: 12px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
