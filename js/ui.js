@@ -6,6 +6,7 @@
 
 let lineCount = 0;
 let detailSLG = '', detail3P = '';
+let trDetails = { '3p': '', ll: '', slg: '' };
 
 // 초기화
 document.getElementById('ibase').textContent = baseCurrentA.toFixed(1);
@@ -144,6 +145,47 @@ function calculate() {
   resultArea.style.display = 'block';
   elSlg.textContent = result.slg;   elSlg.style.fontSize = '28px';
   el3p.textContent  = result.threePh; el3p.style.fontSize = '28px';
+
+  // 변압기 계산 (입력값 있을 때만)
+  const trV2  = parseFloat(document.getElementById('tr-v2').value);
+  const trZt  = parseFloat(document.getElementById('tr-zt').value);
+  const trXr  = parseFloat(document.getElementById('tr-xr').value);
+  const trType = document.getElementById('tr-type').value;
+  const trResultArea = document.getElementById('tr-result-area');
+
+  if (!isNaN(trV2) && trV2 > 0 && !isNaN(trZt) && trZt > 0 && !isNaN(trXr) && trXr > 0) {
+    const tr = runTransformerCalc(result.tR1, result.tX1, trType, trZt, trXr, trV2);
+    trDetails = { '3p': tr.det3p, ll: tr.detLL, slg: tr.detSLG };
+
+    document.getElementById('tr-v2-label').textContent = trV2;
+    document.getElementById('tr-2-3p').textContent  = tr.i3p_2 + ' A';
+    document.getElementById('tr-2-ll').textContent  = tr.ill_2 + ' A';
+    document.getElementById('tr-1-3p').textContent  = tr.i3p_1 + ' A';
+    document.getElementById('tr-1-ll').textContent  = tr.ill_1 + ' A';
+
+    const slgNote = document.getElementById('tr-dd-note');
+    const slgBtn  = document.getElementById('tr-slg-btn');
+    if (tr.islg_2 !== null) {
+      document.getElementById('tr-2-slg').textContent = tr.islg_2 + ' A';
+      document.getElementById('tr-1-slg').textContent = tr.islg_1 + ' A';
+      slgNote.style.display = 'none';
+      slgBtn.style.display  = '';
+    } else {
+      document.getElementById('tr-2-slg').textContent = 'N/A';
+      document.getElementById('tr-1-slg').textContent = 'N/A';
+      slgNote.style.display = 'block';
+      slgBtn.style.display  = 'none';
+    }
+
+    // 폰트 사이즈 통일
+    ['tr-2-3p','tr-2-ll','tr-2-slg','tr-1-3p','tr-1-ll','tr-1-slg'].forEach(id => {
+      const el = document.getElementById(id);
+      el.style.fontSize = el.textContent === 'N/A' ? '16px' : '22px';
+    });
+    trResultArea.style.display = 'block';
+  } else {
+    trResultArea.style.display = 'none';
+  }
 }
 
 // ---------- 계산과정 모달 ----------
@@ -154,6 +196,14 @@ function showDetail(type) {
   document.getElementById('detail-modal').classList.add('active');
 }
 function closeDetail() { document.getElementById('detail-modal').classList.remove('active'); }
+
+// ---------- 변압기 계산과정 모달 ----------
+function showTrDetail(type) {
+  const text = trDetails[type];
+  if (!text) return;
+  document.getElementById('detail-text').textContent = text;
+  document.getElementById('detail-modal').classList.add('active');
+}
 
 // ---------- DB 모달 ----------
 function showDB() {

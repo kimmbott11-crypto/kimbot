@@ -145,6 +145,40 @@ select {
 .db-table td { text-align: right; padding: 4px 4px; border-bottom: 1px solid #f2f2f7; }
 .db-table td:first-child, .db-table td:nth-child(2) { text-align: left; }
 
+/* ---------- 결과 섹션 제목 ---------- */
+.result-section-title {
+  font-size: 12px;
+  color: #6e6e73;
+  font-weight: 600;
+  text-transform: uppercase;
+  margin: 14px 0 8px 0;
+  letter-spacing: 0.3px;
+}
+
+/* ---------- 3열 결과 그리드 ---------- */
+.three-col { flex-wrap: nowrap; gap: 8px; }
+.three-col .result-box { min-width: 0; flex: 1; }
+.three-col .result-value { font-size: 18px; }
+
+/* ---------- 단위 레이블 ---------- */
+.unit-label {
+  font-size: 13px;
+  color: #6e6e73;
+  min-width: 20px;
+  white-space: nowrap;
+}
+
+/* ---------- 오렌지 (선간단락) ---------- */
+.result-value.orange { color: #ff9500; }
+
+/* ---------- 변압기 Δ-Δ 노트 ---------- */
+.tr-note {
+  font-size: 11px;
+  color: #ff3b30;
+  margin-top: 8px;
+  line-height: 1.5;
+}
+
 /* ---------- 계산과정 텍스트 ---------- */
 .detail-text {
   font-family: 'SF Mono', 'Menlo', 'Courier New', monospace;

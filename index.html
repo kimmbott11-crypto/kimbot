@@ -50,11 +50,42 @@
 </div>
 
 <!-- ================================================
+     변압기
+     ================================================ -->
+<div class="section">
+  <div class="section-header">
+    <h3>변압기 (선로 뒤 연결)</h3>
+  </div>
+  <div class="row">
+    <label>결선</label>
+    <select id="tr-type">
+      <option value="dy-solid">Δ-Y (직접접지)</option>
+      <option value="dd">Δ-Δ</option>
+      <option value="dy-eff">Δ-Y (유효접지)</option>
+    </select>
+  </div>
+  <div class="row">
+    <label>2차 전압</label>
+    <input type="text" id="tr-v2" placeholder="예: 0.38" inputmode="decimal">
+    <span class="unit-label">kV</span>
+  </div>
+  <div class="row">
+    <label>|ZT|</label>
+    <input type="text" id="tr-zt" placeholder="p.u." inputmode="decimal">
+    <label style="min-width:28px">X/R</label>
+    <input type="text" id="tr-xr" placeholder="비율" inputmode="decimal">
+  </div>
+</div>
+
+<!-- ================================================
      계산 + 결과
      ================================================ -->
 <div class="section">
   <button class="btn btn-primary" onclick="calculate()">고장계산</button>
+
+  <!-- 모선+선로 결과 -->
   <div id="result-area" style="display:none;">
+    <div class="result-section-title">모선 + 선로 고장전류 (22.9 kV)</div>
     <div class="results-grid">
       <div class="result-box">
         <div class="result-label">1선지락전류 (SLG)</div>
@@ -66,6 +97,46 @@
         <div class="result-value green" id="result-3p"></div>
         <button class="detail-btn" onclick="showDetail('3p')">계산과정 보기</button>
       </div>
+    </div>
+  </div>
+
+  <!-- 변압기 결과 -->
+  <div id="tr-result-area" style="display:none;">
+    <div class="result-section-title">2차 고장전류 (<span id="tr-v2-label">-</span> kV)</div>
+    <div class="results-grid three-col">
+      <div class="result-box">
+        <div class="result-label">3상단락</div>
+        <div class="result-value green" id="tr-2-3p"></div>
+        <button class="detail-btn" onclick="showTrDetail('3p')">계산과정</button>
+      </div>
+      <div class="result-box">
+        <div class="result-label">선간단락</div>
+        <div class="result-value orange" id="tr-2-ll"></div>
+        <button class="detail-btn" onclick="showTrDetail('ll')">계산과정</button>
+      </div>
+      <div class="result-box">
+        <div class="result-label">1선지락 (SLG)</div>
+        <div class="result-value" id="tr-2-slg"></div>
+        <button class="detail-btn" id="tr-slg-btn" onclick="showTrDetail('slg')">계산과정</button>
+      </div>
+    </div>
+    <div class="result-section-title" style="margin-top:14px;">1차 고장전류 (22.9 kV)</div>
+    <div class="results-grid three-col">
+      <div class="result-box">
+        <div class="result-label">3상단락</div>
+        <div class="result-value green" id="tr-1-3p"></div>
+      </div>
+      <div class="result-box">
+        <div class="result-label">선간단락</div>
+        <div class="result-value orange" id="tr-1-ll"></div>
+      </div>
+      <div class="result-box">
+        <div class="result-label">1선지락 (SLG)</div>
+        <div class="result-value" id="tr-1-slg"></div>
+      </div>
+    </div>
+    <div class="tr-note" id="tr-dd-note" style="display:none;">
+      ※ Δ-Δ 결선: 양측 모두 영상전류 경로 없음 → SLG 전류 불통
     </div>
   </div>
 </div>
