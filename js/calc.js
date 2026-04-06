@@ -122,7 +122,7 @@ function runTransformerCalc(srcZ1R, srcZ1X, trType, ztMag, xr, trMVA, v2kV, znR_
   const islg2_pu = (hasSLG && zComb > 0) ? 3 / zComb : 0;
   const islg1_pu = (hasSLG && zComb > 0) ? 2 / zComb : 0;
 
-  const trTypeName = { 'dy-solid': 'Δ-Y (직접접지)', 'dd': 'Δ-Δ', 'dy-eff': 'Δ-Y (유효접지)' }[trType];
+  const trTypeName = { 'dy-solid': 'Δ-Y (직접접지)', 'dd': 'Δ-Δ (비접지)', 'dy-eff': 'Δ-Y (유효접지)' }[trType];
   const znLine = (trType === 'dy-eff')
     ? ' Zn = ' + znR_ohm.toFixed(4) + ' + j' + znX_ohm.toFixed(4) + ' Ω\n' +
       ' Zbase2 = ' + v2kV + '² / ' + baseMVA + ' = ' + zbase2.toFixed(4) + ' Ω\n' +
