@@ -8,18 +8,14 @@
 </head>
 <body>
 
-<!-- ================================================
-     헤더
-================================================ -->
+<!-- 헤더 -->
 <div class="section">
   <h1>KimBot 고장계산기</h1>
   <div class="subtitle">기준: 100MVA, 22.9kV / Ibase = <span id="ibase"></span> A</div>
   <div class="note">• 정상임피던스 = 역상임피던스 (Z1 = Z2)</div>
 </div>
 
-<!-- ================================================
-     모선 임피던스 입력
-================================================ -->
+<!-- 모선 임피던스 -->
 <div class="section">
   <div class="section-header">
     <h3>모선 임피던스 (p.u.)</h3>
@@ -37,9 +33,7 @@
   </div>
 </div>
 
-<!-- ================================================
-     선로 정보
-================================================ -->
+<!-- 선로 정보 -->
 <div class="section">
   <div class="section-header">
     <h3>선로 정보 (최대 10개)</h3>
@@ -49,9 +43,7 @@
   <button class="btn-add" id="btn-add-line" onclick="addLine()">＋ 선로 추가</button>
 </div>
 
-<!-- ================================================
-     변압기
-================================================ -->
+<!-- 변압기 -->
 <div class="section">
   <div class="section-header">
     <h3>변압기</h3>
@@ -86,13 +78,11 @@
   </div>
 </div>
 
-<!-- ================================================
-     계산 + 결과
-================================================ -->
+<!-- 계산 + 결과 -->
 <div class="section">
   <button class="btn btn-primary" onclick="calculate()">고장계산</button>
 
-  <!-- 모선+선로 결과 -->
+  <!-- 모선+선로 결과 (22.9kV) -->
   <div id="result-area" style="display:none;">
     <div class="result-section-title">모선 + 선로 고장전류 (22.9 kV)</div>
     <div class="results-grid">
@@ -111,39 +101,44 @@
 
   <!-- 변압기 결과 -->
   <div id="tr-result-area" style="display:none;">
+
+    <!-- 2차 고장전류: 왼쪽=1선지락, 오른쪽=3상단락 -->
     <div class="result-section-title">2차 고장전류 (<span id="tr-v2-label">-</span> kV)</div>
     <div class="results-grid">
-      <div class="result-box">
-        <div class="result-label">3상단락</div>
-        <div class="result-value green" id="tr-2-3p"></div>
-        <button class="detail-btn" onclick="showTrDetail('3p')">계산과정</button>
-      </div>
       <div class="result-box">
         <div class="result-label">1선지락 (SLG)</div>
         <div class="result-value" id="tr-2-slg"></div>
         <button class="detail-btn" id="tr-slg-btn" onclick="showTrDetail('slg')">계산과정</button>
       </div>
+      <div class="result-box">
+        <div class="result-label">3상단락</div>
+        <div class="result-value green" id="tr-2-3p"></div>
+        <button class="detail-btn" onclick="showTrDetail('3p')">계산과정</button>
+      </div>
     </div>
+
+    <!-- 1차 고장전류: 왼쪽=1선지락, 오른쪽=3상단락 -->
     <div class="result-section-title" style="margin-top:14px;">1차 고장전류 (22.9 kV)</div>
     <div class="results-grid">
       <div class="result-box">
-        <div class="result-label">3상단락</div>
-        <div class="result-value green" id="tr-1-3p"></div>
-      </div>
-      <div class="result-box">
         <div class="result-label">1선지락 (SLG)</div>
         <div class="result-value" id="tr-1-slg"></div>
+        <button class="detail-btn" id="tr-slg-btn-1" onclick="showTrDetail('slg')">계산과정</button>
+      </div>
+      <div class="result-box">
+        <div class="result-label">3상단락</div>
+        <div class="result-value green" id="tr-1-3p"></div>
+        <button class="detail-btn" onclick="showTrDetail('3p')">계산과정</button>
       </div>
     </div>
+
     <div class="tr-note" id="tr-dd-note" style="display:none;">
       ※ Δ-Δ 결선: 양측 모두 영상전류 경로 없음 → SLG 전류 불통
     </div>
   </div>
 </div>
 
-<!-- ================================================
-     모달 - DB 보기
-================================================ -->
+<!-- 모달 - DB 보기 -->
 <div class="modal-overlay" id="db-modal">
   <div class="modal">
     <div class="modal-header">
@@ -154,9 +149,7 @@
   </div>
 </div>
 
-<!-- ================================================
-     모달 - 계산과정
-================================================ -->
+<!-- 모달 - 계산과정 -->
 <div class="modal-overlay" id="detail-modal">
   <div class="modal">
     <div class="modal-header">
