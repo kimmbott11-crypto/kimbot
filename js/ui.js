@@ -3,10 +3,9 @@
 // DOM 조작 및 사용자 인터랙션 처리
 // db.js + calc.js 보다 나중에 로드되어야 합니다.
 // ================================================
-
 let lineCount = 0;
 let detailSLG = '', detail3P = '';
-let trDetails = { '3p': '', ll: '', slg: '' };
+let trDetails = { '3p': '', slg: '' };
 
 // 초기화
 document.getElementById('ibase').textContent = baseCurrentA.toFixed(1);
@@ -26,10 +25,8 @@ function addLine() {
   const container = document.getElementById('lines-container');
   const div = document.createElement('div');
   div.id = 'line-' + lineCount;
-
   let nameOpts = '<option value="">전압선 선택</option>';
   lineNames.forEach(n => { nameOpts += '<option value="' + n + '">' + n + '</option>'; });
-
   div.innerHTML =
     '<div class="line-row">' +
       '<div class="line-top">' +
@@ -53,9 +50,7 @@ function addLine() {
 function removeLine(btn) {
   btn.closest('[id^="line-"]').remove();
   const rows = document.querySelectorAll('#lines-container > [id^="line-"]');
-  rows.forEach((row, i) => {
-    row.querySelector('.line-num').textContent = (i + 1) + '.';
-  });
+  rows.forEach((row, i) => { row.querySelector('.line-num').textContent = (i + 1) + '.'; });
   lineCount = rows.length;
   updateAddBtn();
 }
@@ -66,15 +61,11 @@ function onLineNameChange(sel) {
   const sizeSel    = row.querySelector('.line-size');
   const neutralSel = row.querySelector('.neutral-sel');
   const ln = sel.value;
-
-  sizeSel.innerHTML = '<option value="">-</option>';
+  sizeSel.innerHTML    = '<option value="">-</option>';
   neutralSel.innerHTML = '<option value="">전압선 규격 먼저 선택</option>';
-  neutralSel.disabled = true;
-
+  neutralSel.disabled  = true;
   if (ln) {
-    getLineSizes(ln).forEach(s => {
-      sizeSel.innerHTML += '<option value="' + s + '">' + s + '</option>';
-    });
+    getLineSizes(ln).forEach(s => { sizeSel.innerHTML += '<option value="' + s + '">' + s + '</option>'; });
     sizeSel.disabled = false;
   } else {
     sizeSel.disabled = true;
@@ -83,11 +74,10 @@ function onLineNameChange(sel) {
 
 // ---------- 전압선 규격 변경 ----------
 function onLineSizeChange(sel) {
-  const row        = sel.closest('[id^="line-"]');
-  const ln         = row.querySelector('.line-name').value;
-  const ls         = sel.value;
+  const row = sel.closest('[id^="line-"]');
+  const ln  = row.querySelector('.line-name').value;
+  const ls  = sel.value;
   const neutralSel = row.querySelector('.neutral-sel');
-
   neutralSel.innerHTML = '<option value="">-</option>';
   if (ln && ls) {
     const opts = getNeutralOptions(ln, ls);
@@ -95,7 +85,7 @@ function onLineSizeChange(sel) {
       neutralSel.innerHTML += '<option value="' + i + '">' + o.nn + ' ' + o.ns + 'mm²</option>';
     });
     neutralSel.disabled = false;
-    if (opts.length === 1) { neutralSel.value = '0'; }
+    if (opts.length === 1) neutralSel.value = '0';
   } else {
     neutralSel.disabled = true;
   }
@@ -121,17 +111,14 @@ function calculate() {
   const bxs1 = parseFloat(document.getElementById('bxs1').value);
   const brs0 = parseFloat(document.getElementById('brs0').value);
   const bxs0 = parseFloat(document.getElementById('bxs0').value);
-
   const resultArea = document.getElementById('result-area');
   const elSlg = document.getElementById('result-slg');
   const el3p  = document.getElementById('result-3p');
 
   if (isNaN(brs1) || isNaN(bxs1) || isNaN(brs0) || isNaN(bxs0)) {
     resultArea.style.display = 'block';
-    elSlg.textContent = '모선 임피던스를 입력하세요';
-    elSlg.style.fontSize = '14px';
-    el3p.textContent  = '모선 임피던스를 입력하세요';
-    el3p.style.fontSize = '14px';
+    elSlg.textContent = '모선 임피던스를 입력하세요'; elSlg.style.fontSize = '14px';
+    el3p.textContent  = '모선 임피던스를 입력하세요'; el3p.style.fontSize  = '14px';
     detailSLG = ''; detail3P = '';
     return;
   }
@@ -139,11 +126,11 @@ function calculate() {
   // 선로 데이터 수집
   const lineRows = [];
   document.querySelectorAll('#lines-container > [id^="line-"]').forEach(row => {
-    const ln         = row.querySelector('.line-name').value;
-    const ls         = row.querySelector('.line-size').value;
+    const ln  = row.querySelector('.line-name').value;
+    const ls  = row.querySelector('.line-size').value;
     const neutralSel = row.querySelector('.neutral-sel');
     const neutralIndex = parseInt(neutralSel.value);
-    const dist       = parseFloat(row.querySelector('.line-dist').value) || 0;
+    const dist = parseFloat(row.querySelector('.line-dist').value) || 0;
     if (!ln || !ls || isNaN(neutralIndex)) return;
     lineRows.push({ ln, ls, neutralIndex, dist });
   });
@@ -153,8 +140,8 @@ function calculate() {
   detail3P  = result.detail3P;
 
   resultArea.style.display = 'block';
-  elSlg.textContent = result.slg;   elSlg.style.fontSize = '28px';
-  el3p.textContent  = result.threePh; el3p.style.fontSize = '28px';
+  elSlg.textContent = result.slg;    elSlg.style.fontSize = '28px';
+  el3p.textContent  = result.threePh; el3p.style.fontSize  = '28px';
 
   // 변압기 계산 (입력값 있을 때만)
   const trV2   = parseFloat(document.getElementById('tr-v2').value);
@@ -164,19 +151,17 @@ function calculate() {
   const trType = document.getElementById('tr-type').value;
   const trResultArea = document.getElementById('tr-result-area');
 
-  // 유효접지 접지 임피던스 (없으면 0)
   const znR = parseFloat(document.getElementById('tr-zn-r').value) || 0;
   const znX = parseFloat(document.getElementById('tr-zn-x').value) || 0;
 
-  if (!isNaN(trV2) && trV2 > 0 && !isNaN(trZt) && trZt > 0 && !isNaN(trXr) && trXr > 0 && !isNaN(trMVA) && trMVA > 0) {
+  if (!isNaN(trV2) && trV2 > 0 && !isNaN(trZt) && trZt > 0 &&
+      !isNaN(trXr) && trXr > 0 && !isNaN(trMVA) && trMVA > 0) {
     const tr = runTransformerCalc(result.tR1, result.tX1, trType, trZt, trXr, trMVA, trV2, znR, znX);
-    trDetails = { '3p': tr.det3p, ll: tr.detLL, slg: tr.detSLG };
+    trDetails = { '3p': tr.det3p, slg: tr.detSLG };
 
     document.getElementById('tr-v2-label').textContent = trV2;
-    document.getElementById('tr-2-3p').textContent  = tr.i3p_2 + ' A';
-    document.getElementById('tr-2-ll').textContent  = tr.ill_2 + ' A';
-    document.getElementById('tr-1-3p').textContent  = tr.i3p_1 + ' A';
-    document.getElementById('tr-1-ll').textContent  = tr.ill_1 + ' A';
+    document.getElementById('tr-2-3p').textContent = tr.i3p_2 + ' A';
+    document.getElementById('tr-1-3p').textContent = tr.i3p_1 + ' A';
 
     const slgNote = document.getElementById('tr-dd-note');
     const slgBtn  = document.getElementById('tr-slg-btn');
@@ -192,8 +177,7 @@ function calculate() {
       slgBtn.style.display  = 'none';
     }
 
-    // 폰트 사이즈 통일
-    ['tr-2-3p','tr-2-ll','tr-2-slg','tr-1-3p','tr-1-ll','tr-1-slg'].forEach(id => {
+    ['tr-2-3p','tr-2-slg','tr-1-3p','tr-1-slg'].forEach(id => {
       const el = document.getElementById(id);
       el.style.fontSize = el.textContent === 'N/A' ? '16px' : '22px';
     });
@@ -210,7 +194,9 @@ function showDetail(type) {
   document.getElementById('detail-text').textContent = text;
   document.getElementById('detail-modal').classList.add('active');
 }
-function closeDetail() { document.getElementById('detail-modal').classList.remove('active'); }
+function closeDetail() {
+  document.getElementById('detail-modal').classList.remove('active');
+}
 
 // ---------- 변압기 계산과정 모달 ----------
 function showTrDetail(type) {
@@ -225,22 +211,23 @@ function showDB() {
   const body = document.getElementById('db-body');
   const grouped = {};
   DB.forEach(d => { if (!grouped[d.ln]) grouped[d.ln] = []; grouped[d.ln].push(d); });
-
   let html = '';
   lineNames.forEach(name => {
     html += '<div class="db-section-title">' + name + '</div>';
     html += '<table class="db-table"><tr><th>전압선</th><th>중성선</th><th>RS1</th><th>XS1</th><th>RS0</th><th>XS0</th></tr>';
     grouped[name].forEach(d => {
-      html += '<tr><td>' + d.ls + '</td><td>' + d.nn.split('-')[0] + ' ' + d.ns + '</td>'
-            + '<td>' + d.rs1.toFixed(4) + '</td><td>' + d.xs1.toFixed(4) + '</td>'
-            + '<td>' + d.rs0.toFixed(4) + '</td><td>' + d.xs0.toFixed(4) + '</td></tr>';
+      html += '<tr><td>' + d.ls + '</td><td>' + d.nn.split('-')[0] + ' ' + d.ns + '</td>' +
+              '<td>' + d.rs1.toFixed(4) + '</td><td>' + d.xs1.toFixed(4) + '</td>' +
+              '<td>' + d.rs0.toFixed(4) + '</td><td>' + d.xs0.toFixed(4) + '</td></tr>';
     });
     html += '</table>';
   });
   body.innerHTML = html;
   document.getElementById('db-modal').classList.add('active');
 }
-function closeDB() { document.getElementById('db-modal').classList.remove('active'); }
+function closeDB() {
+  document.getElementById('db-modal').classList.remove('active');
+}
 
 // 모달 바깥 클릭 시 닫기
 document.querySelectorAll('.modal-overlay').forEach(o => {
