@@ -1,16 +1,16 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>KimBot - 고장계산기</title>
-<link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>KimBot - 고장계산기</title>
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
 <!-- ================================================
      헤더
-     ================================================ -->
+================================================ -->
 <div class="section">
   <h1>KimBot 고장계산기</h1>
   <div class="subtitle">기준: 100MVA, 22.9kV / Ibase = <span id="ibase"></span> A</div>
@@ -19,7 +19,7 @@
 
 <!-- ================================================
      모선 임피던스 입력
-     ================================================ -->
+================================================ -->
 <div class="section">
   <div class="section-header">
     <h3>모선 임피던스 (p.u.)</h3>
@@ -39,7 +39,7 @@
 
 <!-- ================================================
      선로 정보
-     ================================================ -->
+================================================ -->
 <div class="section">
   <div class="section-header">
     <h3>선로 정보 (최대 10개)</h3>
@@ -51,7 +51,7 @@
 
 <!-- ================================================
      변압기
-     ================================================ -->
+================================================ -->
 <div class="section">
   <div class="section-header">
     <h3>변압기</h3>
@@ -88,7 +88,7 @@
 
 <!-- ================================================
      계산 + 결과
-     ================================================ -->
+================================================ -->
 <div class="section">
   <button class="btn btn-primary" onclick="calculate()">고장계산</button>
 
@@ -112,16 +112,11 @@
   <!-- 변압기 결과 -->
   <div id="tr-result-area" style="display:none;">
     <div class="result-section-title">2차 고장전류 (<span id="tr-v2-label">-</span> kV)</div>
-    <div class="results-grid three-col">
+    <div class="results-grid">
       <div class="result-box">
         <div class="result-label">3상단락</div>
         <div class="result-value green" id="tr-2-3p"></div>
         <button class="detail-btn" onclick="showTrDetail('3p')">계산과정</button>
-      </div>
-      <div class="result-box">
-        <div class="result-label">선간단락</div>
-        <div class="result-value orange" id="tr-2-ll"></div>
-        <button class="detail-btn" onclick="showTrDetail('ll')">계산과정</button>
       </div>
       <div class="result-box">
         <div class="result-label">1선지락 (SLG)</div>
@@ -130,14 +125,10 @@
       </div>
     </div>
     <div class="result-section-title" style="margin-top:14px;">1차 고장전류 (22.9 kV)</div>
-    <div class="results-grid three-col">
+    <div class="results-grid">
       <div class="result-box">
         <div class="result-label">3상단락</div>
         <div class="result-value green" id="tr-1-3p"></div>
-      </div>
-      <div class="result-box">
-        <div class="result-label">선간단락</div>
-        <div class="result-value orange" id="tr-1-ll"></div>
       </div>
       <div class="result-box">
         <div class="result-label">1선지락 (SLG)</div>
@@ -152,7 +143,7 @@
 
 <!-- ================================================
      모달 - DB 보기
-     ================================================ -->
+================================================ -->
 <div class="modal-overlay" id="db-modal">
   <div class="modal">
     <div class="modal-header">
@@ -165,7 +156,7 @@
 
 <!-- ================================================
      모달 - 계산과정
-     ================================================ -->
+================================================ -->
 <div class="modal-overlay" id="detail-modal">
   <div class="modal">
     <div class="modal-header">
