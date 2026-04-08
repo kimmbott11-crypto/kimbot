@@ -15,6 +15,27 @@ function applyTypical() {
   document.getElementById('bxs0').value = '0.49724';
 }
 
+// ---------- X/R Typical (IEC 60076 기반 22.9kV 배전용) ----------
+function applyTypicalXR() {
+  const mva = parseFloat(document.getElementById('tr-mva').value);
+  if (isNaN(mva) || mva <= 0) {
+    alert('용량(MVA)을 먼저 입력하세요.');
+    return;
+  }
+  let xr;
+  if      (mva <= 0.1)  xr = 3;
+  else if (mva <= 0.2)  xr = 4;
+  else if (mva <= 0.5)  xr = 5;
+  else if (mva <= 1.0)  xr = 7;
+  else if (mva <= 2.0)  xr = 10;
+  else if (mva <= 3.0)  xr = 12;
+  else if (mva <= 5.0)  xr = 15;
+  else if (mva <= 10.0) xr = 20;
+  else if (mva <= 15.0) xr = 25;
+  else                  xr = 30;
+  document.getElementById('tr-xr').value = xr;
+}
+
 function addLine() {
   if (lineCount >= 10) return;
   lineCount++;
