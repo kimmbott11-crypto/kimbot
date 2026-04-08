@@ -67,8 +67,11 @@
   <div class="row">
     <label>|ZT|</label>
     <input type="text" id="tr-zt" placeholder="p.u. (자기용량기준)" inputmode="decimal">
-    <label style="min-width:28px">X/R</label>
+  </div>
+  <div class="row">
+    <label>X/R</label>
     <input type="text" id="tr-xr" placeholder="비율" inputmode="decimal">
+    <button class="btn btn-small" onclick="applyTypicalXR()">Typical</button>
   </div>
   <div class="row" id="tr-zn-row" style="display:none;">
     <label>Zn</label>
