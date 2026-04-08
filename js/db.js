@@ -24,14 +24,14 @@ const DB = [
   {type:"AW",ln:"AW-특고ACSR/AW",ls:"240",nn:"AL-ACSR/AW",ns:"95", rs1:0.022968,xs1:0.071391,rs0:0.078974,xs0:0.222305},
 
   // CF-특고압케이블 FR CNCO-W
-  {type:"CF",ln:"CF-특고압케이블 FR CNCO-W",ls:"60", nn:"FR CNCO-W",ns:"60", rs1:0.073879,xs1:0.03112, rs0:0.216242,xs0:0.067733},
-  {type:"CF",ln:"CF-특고압케이블 FR CNCO-W",ls:"100",nn:"FR CNCO-W",ns:"100",rs1:0.043896,xs1:0.00865, rs0:0.138822,xs0:0.038004},
-  {type:"CF",ln:"CF-특고압케이블 FR CNCO-W",ls:"150",nn:"FR CNCO-W",ns:"150",rs1:0.029128,xs1:0.02653, rs0:0.096775,xs0:0.025666},
-  {type:"CF",ln:"CF-특고압케이블 FR CNCO-W",ls:"200",nn:"FR CNCO-W",ns:"200",rs1:0.022767,xs1:0.025823,rs0:0.074178,xs0:0.020651},
-  {type:"CF",ln:"CF-특고압케이블 FR CNCO-W",ls:"250",nn:"FR CNCO-W",ns:"250",rs1:0.018242,xs1:0.024887,rs0:0.058122,xs0:0.018134},
-  {type:"CF",ln:"CF-특고압케이블 FR CNCO-W",ls:"325",nn:"FR CNCO-W",ns:"325",rs1:0.014325,xs1:0.023741,rs0:0.044678,xs0:0.015617},
-  {type:"CF",ln:"CF-특고압케이블 FR CNCO-W",ls:"400",nn:"FR CNCO-W",ns:"400",rs1:0.014301,xs1:0.02341, rs0:0.053222,xs0:0.017353},
-  {type:"CF",ln:"CF-특고압케이블 FR CNCO-W",ls:"600",nn:"FR CNCO-W",ns:"600",rs1:0.014035,xs1:0.024351,rs0:0.029481,xs0:0.012757},
+  {type:"CF",ln:"CF-특고압케이블 FR CNCO-W",ls:"60", nn:"CF-FR CNCO-W",ns:"60", rs1:0.073879,xs1:0.03112, rs0:0.216242,xs0:0.067733},
+  {type:"CF",ln:"CF-특고압케이블 FR CNCO-W",ls:"100",nn:"CF-FR CNCO-W",ns:"100",rs1:0.043896,xs1:0.00865, rs0:0.138822,xs0:0.038004},
+  {type:"CF",ln:"CF-특고압케이블 FR CNCO-W",ls:"150",nn:"CF-FR CNCO-W",ns:"150",rs1:0.029128,xs1:0.02653, rs0:0.096775,xs0:0.025666},
+  {type:"CF",ln:"CF-특고압케이블 FR CNCO-W",ls:"200",nn:"CF-FR CNCO-W",ns:"200",rs1:0.022767,xs1:0.025823,rs0:0.074178,xs0:0.020651},
+  {type:"CF",ln:"CF-특고압케이블 FR CNCO-W",ls:"250",nn:"CF-FR CNCO-W",ns:"250",rs1:0.018242,xs1:0.024887,rs0:0.058122,xs0:0.018134},
+  {type:"CF",ln:"CF-특고압케이블 FR CNCO-W",ls:"325",nn:"CF-FR CNCO-W",ns:"325",rs1:0.014325,xs1:0.023741,rs0:0.044678,xs0:0.015617},
+  {type:"CF",ln:"CF-특고압케이블 FR CNCO-W",ls:"400",nn:"CF-FR CNCO-W",ns:"400",rs1:0.014301,xs1:0.02341, rs0:0.053222,xs0:0.017353},
+  {type:"CF",ln:"CF-특고압케이블 FR CNCO-W",ls:"600",nn:"CF-FR CNCO-W",ns:"600",rs1:0.014035,xs1:0.024351,rs0:0.029481,xs0:0.012757},
 
   // CN-특고압케이블CNCV
   {type:"CN",ln:"CN-특고압케이블CNCV",ls:"60", nn:"CNCV",ns:"60", rs1:0.073879,xs1:0.03112, rs0:0.216242,xs0:0.067733},
