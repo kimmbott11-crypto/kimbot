@@ -9,10 +9,10 @@ let trDetails = { '3p': '', slg: '' };
 document.getElementById('ibase').textContent = baseCurrentA.toFixed(1);
 
 function applyTypical() {
-  document.getElementById('brs1').value = '0.00021';
-  document.getElementById('bxs1').value = '0.34817';
+  document.getElementById('brs1').value = '0.021';
+  document.getElementById('bxs1').value = '34.817';
   document.getElementById('brs0').value = '0';
-  document.getElementById('bxs0').value = '0.49724';
+  document.getElementById('bxs0').value = '49.724';
 }
 
 // ---------- X/R Typical (IEC 60076 기반 22.9kV 배전용) ----------
@@ -120,21 +120,27 @@ function onTrTypeChange() {
 }
 
 function calculate() {
-  const brs1 = parseFloat(document.getElementById('brs1').value);
-  const bxs1 = parseFloat(document.getElementById('bxs1').value);
-  const brs0 = parseFloat(document.getElementById('brs0').value);
-  const bxs0 = parseFloat(document.getElementById('bxs0').value);
+  const brs1_pct = parseFloat(document.getElementById('brs1').value);
+  const bxs1_pct = parseFloat(document.getElementById('bxs1').value);
+  const brs0_pct = parseFloat(document.getElementById('brs0').value);
+  const bxs0_pct = parseFloat(document.getElementById('bxs0').value);
   const resultArea = document.getElementById('result-area');
   const elSlg = document.getElementById('result-slg');
   const el3p  = document.getElementById('result-3p');
 
-  if (isNaN(brs1) || isNaN(bxs1) || isNaN(brs0) || isNaN(bxs0)) {
+  if (isNaN(brs1_pct) || isNaN(bxs1_pct) || isNaN(brs0_pct) || isNaN(bxs0_pct)) {
     resultArea.style.display = 'block';
     elSlg.textContent = '모선 임피던스를 입력하세요'; elSlg.style.fontSize = '14px';
     el3p.textContent  = '모선 임피던스를 입력하세요'; el3p.style.fontSize  = '14px';
     detailSLG = ''; detail3P = '';
     return;
   }
+
+  // 계산 로직(runCalculation)은 p.u. 기준이므로 내부 변환만 하고 표시는 %Z 그대로 사용
+  const brs1 = brs1_pct / 100;
+  const bxs1 = bxs1_pct / 100;
+  const brs0 = brs0_pct / 100;
+  const bxs0 = bxs0_pct / 100;
 
   const lineRows = [];
   document.querySelectorAll('#lines-container > [id^="line-"]').forEach(row => {
@@ -156,7 +162,7 @@ function calculate() {
   el3p.textContent  = result.threePh; el3p.style.fontSize  = '28px';
 
   const trV2_V  = parseFloat(document.getElementById('tr-v2').value);
-  const trZt   = parseFloat(document.getElementById('tr-zt').value);
+  const trZt_pct = parseFloat(document.getElementById('tr-zt').value);
   const trXr   = parseFloat(document.getElementById('tr-xr').value);
   const trKVA  = parseFloat(document.getElementById('tr-mva').value);
   const trType = document.getElementById('tr-type').value;
@@ -164,9 +170,10 @@ function calculate() {
   const znR = parseFloat(document.getElementById('tr-zn-r').value) || 0;
   const znX = parseFloat(document.getElementById('tr-zn-x').value) || 0;
 
-  // 계산 로직(runTransformerCalc)은 MVA/kV 기준이므로 내부 변환만 하고 표시는 kVA/V 그대로 사용
+  // 계산 로직(runTransformerCalc)은 MVA/kV/p.u. 기준이므로 내부 변환만 하고 표시는 kVA/V/%Z 그대로 사용
   const trV2  = trV2_V / 1000;   // V -> kV
   const trMVA = trKVA / 1000;    // kVA -> MVA
+  const trZt  = trZt_pct / 100;  // %Z -> p.u.
 
   if (!isNaN(trV2) && trV2 > 0 && !isNaN(trZt) && trZt > 0 &&
       !isNaN(trXr) && trXr > 0 && !isNaN(trMVA) && trMVA > 0) {
@@ -232,8 +239,8 @@ function showDB() {
     html += '<table class="db-table"><tr><th>전압선</th><th>중성선</th><th>RS1</th><th>XS1</th><th>RS0</th><th>XS0</th></tr>';
     grouped[name].forEach(d => {
       html += '<tr><td>' + d.ls + '</td><td>' + d.nn.split('-')[0] + ' ' + d.ns + '</td>' +
-              '<td>' + d.rs1.toFixed(4) + '</td><td>' + d.xs1.toFixed(4) + '</td>' +
-              '<td>' + d.rs0.toFixed(4) + '</td><td>' + d.xs0.toFixed(4) + '</td></tr>';
+              '<td>' + (d.rs1*100).toFixed(2) + '</td><td>' + (d.xs1*100).toFixed(2) + '</td>' +
+              '<td>' + (d.rs0*100).toFixed(2) + '</td><td>' + (d.xs0*100).toFixed(2) + '</td></tr>';
     });
     html += '</table>';
   });

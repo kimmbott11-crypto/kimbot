@@ -18,7 +18,7 @@
 <!-- 모선 임피던스 -->
 <div class="section">
   <div class="section-header">
-    <h3>모선 임피던스 (p.u.)</h3>
+    <h3>모선 임피던스 (%Z)</h3>
     <button class="btn btn-small" onclick="applyTypical()">Typical</button>
   </div>
   <div class="row">
@@ -66,7 +66,7 @@
   </div>
   <div class="row">
     <label>|ZT|</label>
-    <input type="text" id="tr-zt" placeholder="p.u. (자기용량기준)" inputmode="decimal">
+    <input type="text" id="tr-zt" placeholder="%Z (자기용량기준)" inputmode="decimal">
   </div>
   <div class="row">
     <label>X/R</label>
@@ -145,7 +145,7 @@
 <div class="modal-overlay" id="db-modal">
   <div class="modal">
     <div class="modal-header">
-      <h3>임피던스 DB (p.u./km)</h3>
+      <h3>임피던스 DB (%Z/km)</h3>
       <button class="modal-close" onclick="closeDB()">닫기</button>
     </div>
     <div class="modal-body" id="db-body"></div>
