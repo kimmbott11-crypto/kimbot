@@ -15,6 +15,16 @@ function applyTypical() {
   document.getElementById('bxs0').value = '49.724';
 }
 
+// 결과 전류 표시: 정수부 4자리 이상(1000 이상)이면 kA 단위로 변환
+function formatCurrentA(value) {
+  const num = parseFloat(value);
+  if (isNaN(num)) return '-';
+  if (Math.abs(num) >= 1000) {
+    return (num / 1000).toFixed(2) + ' kA';
+  }
+  return num.toFixed(1) + ' A';
+}
+
 // ---------- X/R Typical (IEC 60076 기반 22.9kV 배전용) ----------
 function applyTypicalXR() {
   const kva = parseFloat(document.getElementById('tr-mva').value);
@@ -158,8 +168,8 @@ function calculate() {
   detail3P  = result.detail3P;
 
   resultArea.style.display = 'block';
-  elSlg.textContent = result.slg;     elSlg.style.fontSize = '28px';
-  el3p.textContent  = result.threePh; el3p.style.fontSize  = '28px';
+  elSlg.textContent = result.slg !== null ? formatCurrentA(result.slg) : '-';     elSlg.style.fontSize = '28px';
+  el3p.textContent  = result.threePh !== null ? formatCurrentA(result.threePh) : '-'; el3p.style.fontSize  = '28px';
 
   const trV2_V  = parseFloat(document.getElementById('tr-v2').value);
   const trZt_pct = parseFloat(document.getElementById('tr-zt').value);
@@ -181,16 +191,16 @@ function calculate() {
     trDetails = { '3p': tr.det3p, slg: tr.detSLG };
 
     document.getElementById('tr-v2-label').textContent = trV2_V;
-    document.getElementById('tr-2-3p').textContent = tr.i3p_2 + ' A';
-    document.getElementById('tr-1-3p').textContent = tr.i3p_1 + ' A';
+    document.getElementById('tr-2-3p').textContent = formatCurrentA(tr.i3p_2);
+    document.getElementById('tr-1-3p').textContent = formatCurrentA(tr.i3p_1);
 
     const slgNote = document.getElementById('tr-dd-note');
     const slgBtn  = document.getElementById('tr-slg-btn');
     const slgBtn1 = document.getElementById('tr-slg-btn-1');
 
     if (tr.islg_2 !== null) {
-      document.getElementById('tr-2-slg').textContent = tr.islg_2 + ' A';
-      document.getElementById('tr-1-slg').textContent = tr.islg_1 + ' A';
+      document.getElementById('tr-2-slg').textContent = formatCurrentA(tr.islg_2);
+      document.getElementById('tr-1-slg').textContent = formatCurrentA(tr.islg_1);
       slgNote.style.display  = 'none';
       slgBtn.style.display   = '';
       slgBtn1.style.display  = '';

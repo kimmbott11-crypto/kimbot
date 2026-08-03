@@ -68,16 +68,16 @@ function runCalculation(brs1, bxs1, brs0, bxs0, lineRows) {
   const z1Mag = Math.sqrt(tR1 * tR1 + tX1 * tX1);
   d3P += '■ |Z1_total| = ' + z1Mag.toFixed(5) + ' p.u.\n\n';
 
-  let slg = '-', threePh = '-';
+  let slg = null, threePh = null;
   if (zMag > 0) {
     const islg = 3.0 * baseCurrentA / zMag;
     dSlg += '■ 1선지락전류 (SLG)\n Islg = 3 × Ibase / |2Z1 + Z0|\n = 3 × ' + baseCurrentA.toFixed(1) + ' / ' + zMag.toFixed(5) + '\n = ' + islg.toFixed(1) + ' A\n';
-    slg = islg.toFixed(1) + ' A';
+    slg = islg;
   }
   if (z1Mag > 0) {
     const i3p = baseCurrentA / z1Mag;
     d3P += '■ 3상단락전류\n I3φ = Ibase / |Z1_total|\n = ' + baseCurrentA.toFixed(1) + ' / ' + z1Mag.toFixed(5) + '\n = ' + i3p.toFixed(1) + ' A\n';
-    threePh = i3p.toFixed(1) + ' A';
+    threePh = i3p;
   }
   return { slg, threePh, detailSLG: dSlg, detail3P: d3P, tR1, tX1 };
 }
