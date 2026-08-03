@@ -17,11 +17,12 @@ function applyTypical() {
 
 // ---------- X/R Typical (IEC 60076 기반 22.9kV 배전용) ----------
 function applyTypicalXR() {
-  const mva = parseFloat(document.getElementById('tr-mva').value);
-  if (isNaN(mva) || mva <= 0) {
-    alert('용량(MVA)을 먼저 입력하세요.');
+  const kva = parseFloat(document.getElementById('tr-mva').value);
+  if (isNaN(kva) || kva <= 0) {
+    alert('용량(kVA)을 먼저 입력하세요.');
     return;
   }
+  const mva = kva / 1000;
   let xr;
   if      (mva <= 0.1)  xr = 3;
   else if (mva <= 0.2)  xr = 4;
@@ -154,21 +155,25 @@ function calculate() {
   elSlg.textContent = result.slg;     elSlg.style.fontSize = '28px';
   el3p.textContent  = result.threePh; el3p.style.fontSize  = '28px';
 
-  const trV2   = parseFloat(document.getElementById('tr-v2').value);
+  const trV2_V  = parseFloat(document.getElementById('tr-v2').value);
   const trZt   = parseFloat(document.getElementById('tr-zt').value);
   const trXr   = parseFloat(document.getElementById('tr-xr').value);
-  const trMVA  = parseFloat(document.getElementById('tr-mva').value);
+  const trKVA  = parseFloat(document.getElementById('tr-mva').value);
   const trType = document.getElementById('tr-type').value;
   const trResultArea = document.getElementById('tr-result-area');
   const znR = parseFloat(document.getElementById('tr-zn-r').value) || 0;
   const znX = parseFloat(document.getElementById('tr-zn-x').value) || 0;
+
+  // 계산 로직(runTransformerCalc)은 MVA/kV 기준이므로 내부 변환만 하고 표시는 kVA/V 그대로 사용
+  const trV2  = trV2_V / 1000;   // V -> kV
+  const trMVA = trKVA / 1000;    // kVA -> MVA
 
   if (!isNaN(trV2) && trV2 > 0 && !isNaN(trZt) && trZt > 0 &&
       !isNaN(trXr) && trXr > 0 && !isNaN(trMVA) && trMVA > 0) {
     const tr = runTransformerCalc(result.tR1, result.tX1, trType, trZt, trXr, trMVA, trV2, znR, znX);
     trDetails = { '3p': tr.det3p, slg: tr.detSLG };
 
-    document.getElementById('tr-v2-label').textContent = trV2;
+    document.getElementById('tr-v2-label').textContent = trV2_V;
     document.getElementById('tr-2-3p').textContent = tr.i3p_2 + ' A';
     document.getElementById('tr-1-3p').textContent = tr.i3p_1 + ' A';
 
