@@ -8,7 +8,15 @@ let trDetails = { '3p': '', slg: '' };
 
 document.getElementById('ibase').textContent = baseCurrentA.toFixed(1);
 
+function onBusInputModeChange() {
+  const isMva = document.getElementById('bus-input-mode').value === 'mva';
+  document.getElementById('bus-pct-rows').style.display = isMva ? 'none' : '';
+  document.getElementById('bus-mva-rows').style.display = isMva ? '' : 'none';
+}
+
 function applyTypical() {
+  document.getElementById('bus-input-mode').value = 'pct';
+  onBusInputModeChange();
   document.getElementById('brs1').value = '0.021';
   document.getElementById('bxs1').value = '34.817';
   document.getElementById('brs0').value = '0';
@@ -130,27 +138,58 @@ function onTrTypeChange() {
 }
 
 function calculate() {
-  const brs1_pct = parseFloat(document.getElementById('brs1').value);
-  const bxs1_pct = parseFloat(document.getElementById('bxs1').value);
-  const brs0_pct = parseFloat(document.getElementById('brs0').value);
-  const bxs0_pct = parseFloat(document.getElementById('bxs0').value);
   const resultArea = document.getElementById('result-area');
   const elSlg = document.getElementById('result-slg');
   const el3p  = document.getElementById('result-3p');
+  const busMode = document.getElementById('bus-input-mode').value;
 
-  if (isNaN(brs1_pct) || isNaN(bxs1_pct) || isNaN(brs0_pct) || isNaN(bxs0_pct)) {
-    resultArea.style.display = 'block';
-    elSlg.textContent = '모선 임피던스를 입력하세요'; elSlg.style.fontSize = '14px';
-    el3p.textContent  = '모선 임피던스를 입력하세요'; el3p.style.fontSize  = '14px';
-    detailSLG = ''; detail3P = '';
-    return;
+  let brs1, bxs1, brs0, bxs0;
+
+  if (busMode === 'mva') {
+    // 단락용량(MVA) 입력 → p.u.로 환산 (R성분은 0으로 가정)
+    const sc3p = parseFloat(document.getElementById('bus-sc3p-mva').value);
+    const scSlg = parseFloat(document.getElementById('bus-slg-mva').value);
+
+    if (isNaN(sc3p) || sc3p <= 0 || isNaN(scSlg) || scSlg <= 0) {
+      resultArea.style.display = 'block';
+      elSlg.textContent = '단락용량을 입력하세요'; elSlg.style.fontSize = '14px';
+      el3p.textContent  = '단락용량을 입력하세요'; el3p.style.fontSize  = '14px';
+      detailSLG = ''; detail3P = '';
+      return;
+    }
+
+    brs1 = 0;
+    bxs1 = baseMVA / sc3p;                       // |Z1| = Base/MVAsc3p
+    const x0 = (3 * baseMVA / scSlg) - (2 * bxs1); // |2Z1+Z0| = 3×Base/MVAslg
+    if (x0 < 0) {
+      resultArea.style.display = 'block';
+      elSlg.textContent = '1선지락용량이 너무 큽니다'; elSlg.style.fontSize = '14px';
+      el3p.textContent  = '입력값을 확인하세요'; el3p.style.fontSize  = '14px';
+      detailSLG = ''; detail3P = '';
+      return;
+    }
+    brs0 = 0;
+    bxs0 = x0;
+  } else {
+    const brs1_pct = parseFloat(document.getElementById('brs1').value);
+    const bxs1_pct = parseFloat(document.getElementById('bxs1').value);
+    const brs0_pct = parseFloat(document.getElementById('brs0').value);
+    const bxs0_pct = parseFloat(document.getElementById('bxs0').value);
+
+    if (isNaN(brs1_pct) || isNaN(bxs1_pct) || isNaN(brs0_pct) || isNaN(bxs0_pct)) {
+      resultArea.style.display = 'block';
+      elSlg.textContent = '모선 임피던스를 입력하세요'; elSlg.style.fontSize = '14px';
+      el3p.textContent  = '모선 임피던스를 입력하세요'; el3p.style.fontSize  = '14px';
+      detailSLG = ''; detail3P = '';
+      return;
+    }
+
+    // 계산 로직(runCalculation)은 p.u. 기준이므로 내부 변환만 하고 표시는 %Z 그대로 사용
+    brs1 = brs1_pct / 100;
+    bxs1 = bxs1_pct / 100;
+    brs0 = brs0_pct / 100;
+    bxs0 = bxs0_pct / 100;
   }
-
-  // 계산 로직(runCalculation)은 p.u. 기준이므로 내부 변환만 하고 표시는 %Z 그대로 사용
-  const brs1 = brs1_pct / 100;
-  const bxs1 = bxs1_pct / 100;
-  const brs0 = brs0_pct / 100;
-  const bxs0 = bxs0_pct / 100;
 
   const lineRows = [];
   document.querySelectorAll('#lines-container > [id^="line-"]').forEach(row => {

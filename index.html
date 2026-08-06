@@ -18,18 +18,37 @@
 <!-- 모선 임피던스 -->
 <div class="section">
   <div class="section-header">
-    <h3>모선 임피던스 (%Z)</h3>
+    <h3>모선 임피던스</h3>
+    <select id="bus-input-mode" onchange="onBusInputModeChange()" style="max-width:130px">
+      <option value="pct">%Z 입력</option>
+      <option value="mva">단락용량(MVA) 입력</option>
+    </select>
     <button class="btn btn-small" onclick="applyTypical()">Typical</button>
   </div>
-  <div class="row">
-    <label>정상</label>
-    <input type="text" id="brs1" placeholder="RS1" inputmode="decimal">
-    <input type="text" id="bxs1" placeholder="XS1" inputmode="decimal">
+  <div id="bus-pct-rows">
+    <div class="row">
+      <label>정상</label>
+      <input type="text" id="brs1" placeholder="RS1 (%Z)" inputmode="decimal">
+      <input type="text" id="bxs1" placeholder="XS1 (%Z)" inputmode="decimal">
+    </div>
+    <div class="row">
+      <label>영상</label>
+      <input type="text" id="brs0" placeholder="RS0 (%Z)" inputmode="decimal">
+      <input type="text" id="bxs0" placeholder="XS0 (%Z)" inputmode="decimal">
+    </div>
   </div>
-  <div class="row">
-    <label>영상</label>
-    <input type="text" id="brs0" placeholder="RS0" inputmode="decimal">
-    <input type="text" id="bxs0" placeholder="XS0" inputmode="decimal">
+  <div id="bus-mva-rows" style="display:none;">
+    <div class="row">
+      <label>3상단락</label>
+      <input type="text" id="bus-sc3p-mva" placeholder="MVA" inputmode="decimal">
+      <span class="unit-label">MVA</span>
+    </div>
+    <div class="row">
+      <label>1선지락</label>
+      <input type="text" id="bus-slg-mva" placeholder="MVA" inputmode="decimal">
+      <span class="unit-label">MVA</span>
+    </div>
+    <div class="note">R성분은 0으로 가정하여 %Z로 환산합니다 (기준: 100MVA)</div>
   </div>
 </div>
 
