@@ -5,18 +5,62 @@
 let lineCount = 0;
 let detailSLG = '', detail3P = '';
 let trDetails = { '3p': '', slg: '' };
+let prevBusMode = 'pct';
 
 document.getElementById('ibase').textContent = baseCurrentA.toFixed(1);
 
-function onBusInputModeChange() {
+function showBusRows() {
   const isMva = document.getElementById('bus-input-mode').value === 'mva';
   document.getElementById('bus-pct-rows').style.display = isMva ? 'none' : '';
   document.getElementById('bus-mva-rows').style.display = isMva ? '' : 'none';
 }
 
+// %Z(RS1,XS1,RS0,XS0) 입력값 -> 단락용량(MVA)으로 환산해 채워넣기
+function busPctToMva() {
+  const brs1 = parseFloat(document.getElementById('brs1').value) || 0;
+  const bxs1 = parseFloat(document.getElementById('bxs1').value) || 0;
+  const brs0 = parseFloat(document.getElementById('brs0').value) || 0;
+  const bxs0 = parseFloat(document.getElementById('bxs0').value) || 0;
+  if (!brs1 && !bxs1) return; // 입력값 없으면 변환 안 함
+
+  const z1pu   = Math.sqrt(Math.pow(brs1 / 100, 2) + Math.pow(bxs1 / 100, 2));
+  const zSumPu = Math.sqrt(Math.pow((2 * brs1 + brs0) / 100, 2) + Math.pow((2 * bxs1 + bxs0) / 100, 2));
+
+  if (z1pu > 0)   document.getElementById('bus-sc3p-mva').value = (baseMVA / z1pu).toFixed(2);
+  if (zSumPu > 0) document.getElementById('bus-slg-mva').value  = (3 * baseMVA / zSumPu).toFixed(2);
+}
+
+// 단락용량(MVA) 입력값 -> %Z(RS1,XS1,RS0,XS0)로 환산해 채워넣기 (R성분은 0으로 가정)
+function busMvaToPct() {
+  const sc3p  = parseFloat(document.getElementById('bus-sc3p-mva').value);
+  const scSlg = parseFloat(document.getElementById('bus-slg-mva').value);
+  if (isNaN(sc3p) || sc3p <= 0) return;
+
+  const xs1pu = baseMVA / sc3p;
+  document.getElementById('brs1').value = '0';
+  document.getElementById('bxs1').value = (xs1pu * 100).toFixed(3);
+
+  if (!isNaN(scSlg) && scSlg > 0) {
+    const xs0pu = Math.max((3 * baseMVA / scSlg) - (2 * xs1pu), 0);
+    document.getElementById('brs0').value = '0';
+    document.getElementById('bxs0').value = (xs0pu * 100).toFixed(3);
+  }
+}
+
+function onBusInputModeChange() {
+  const newMode = document.getElementById('bus-input-mode').value;
+  if (newMode !== prevBusMode) {
+    if (newMode === 'mva') busPctToMva();
+    else busMvaToPct();
+    prevBusMode = newMode;
+  }
+  showBusRows();
+}
+
 function applyTypical() {
+  prevBusMode = 'pct';
   document.getElementById('bus-input-mode').value = 'pct';
-  onBusInputModeChange();
+  showBusRows();
   document.getElementById('brs1').value = '0.021';
   document.getElementById('bxs1').value = '34.817';
   document.getElementById('brs0').value = '0';
